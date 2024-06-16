@@ -1,17 +1,26 @@
 import socket
 import time
 
-# Configura e executa o cliente TCP
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect(("localhost", 12345))
+class TCPClient:
+    # Armazena o numero da porta e o endereço do host e cria o socket tcp
+    def __init__(self, host, port):
+        self.host = host
+        self.port = port
 
-start_time = time.time()
-for i in range(1000):
-    message = f"Message {i}"
-    client_socket.send(message.encode('utf-8'))
-    response = client_socket.recv(1024)
-    print(f"Resposta do servidor: {response.decode('utf-8')}")
-end_time = time.time()
+    # Realiza a conexão do socket cliente com o servidor e Adiciona o loop que irá iterar 1000x
+    def start(self, count, times):
+        for i in range(count):
+            start_time = time.time()
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.client_socket.connect((self.host, self.port))
+            self.client_socket.send(f"Mensagem {i}".encode("utf-8"))
+            response = self.client_socket.recv(1024).decode("utf-8")
+            # print(f"Resposta do servidor: {response}")
+            self.client_socket.close()
+            end_time = time.time()
+            times.append(end_time - start_time)
 
-print(f"Tempo total TCP: {end_time - start_time} segundos")
-client_socket.close()
+if __name__ == "__main__":
+    client = TCPClient('localhost', 12345)
+    tcp_times = []
+    client.start(1000, tcp_times)

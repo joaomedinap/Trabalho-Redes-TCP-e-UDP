@@ -1,17 +1,25 @@
 import socket
 import time
 
-# Configura e executa o cliente UDP
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-server_address = ("localhost", 12345)
+# Armazena o numero da porta e o endereço do host e cria o socket udp (datagrama)
+class UDPClient: 
+    def __init__(self, host, port): 
+        self.host = host  
+        self.port = port  
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  
 
-start_time = time.time()
-for i in range(1000):
-    message = f"Message {i}"
-    client_socket.sendto(message.encode('utf-8'), server_address)
-    data, addr = client_socket.recvfrom(1024)
-    print(f"Resposta do servidor: {data.decode('utf-8')}")
-end_time = time.time()
+# Função de envio de mensagens e loop que irá iterar 1000x e envia a mensagem formatada para o servidor no endereço (host, port)
+    def start(self, count, times): 
+        for i in range(count):  
+            start_time = time.time()
+            self.client_socket.sendto(f"Mensagem {i}".encode(), (self.host, self.port))
+            self.client_socket.recvfrom(1024)
+            end_time = time.time()
+            times.append(end_time - start_time)
+        self.client_socket.close()
 
-print(f"Tempo total UDP: {end_time - start_time} segundos")
-client_socket.close()
+# Cria a instancia do UDP e chama o metodo para envio das mensagens
+if __name__ == "__main__":  
+    client = UDPClient('localhost', 12345) 
+    udp_times = []
+    client.start(1000, udp_times)
